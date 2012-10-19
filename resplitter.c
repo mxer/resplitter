@@ -348,7 +348,7 @@ int merge(int totalChunks, const char *filename, const char *outputfile) {
 
 
   memset(&outinfo, 0, sizeof(SF_INFO));
- for(i=1;i<totalChunks;i++)
+ for(i=0;i<totalChunks;i++)
  {
  sprintf (chunkFile,"%s.chunk%d.wav",filename,i);
  if (update_output_info(chunkFile, &outinfo)) {
@@ -368,21 +368,24 @@ int merge(int totalChunks, const char *filename, const char *outputfile) {
 	buffer = (int*)malloc((buffer_size*2) * sizeof(int)); // 2x size we are not sure how the frame is being read/written in libsndfile...
 
   memset(&info, 0, sizeof(SF_INFO));
- for(i=1;i<totalChunks;i++)
+ for(i=0;i<totalChunks;i++)
  {
   sprintf (chunkFile,"%s.chunk%d.wav",filename,i);
   
     input = sf_open(chunkFile, SFM_READ, &info);
     if (!input) {
-      fprintf(stderr, "failed to open input: %s\n", "test.wav");
-      return 4;
-    }
+     if (verbose ==1)
+        fprintf(stderr, "failed to open input: %s\n", "test.wav");
+      //return 4;
+    }else 
+    {
     copy_frames_from_to(buffer, buffer_size, input, out);
     if (verbose == 1)
       printf("wrote from src: %s\n", chunkFile);
       
     sf_close(input);
     unlink(chunkFile);
+    }
 }
   free(buffer);
   sf_close(out);
@@ -399,9 +402,10 @@ static int update_output_info(const char *name, SF_INFO *output) {
 
   input = sf_open(name, SFM_READ, &info);
   if (!input) {
-    fprintf(stderr, "failed to open input: %s\n", name);
-    return 2;
-  }
+    if (verbose ==1 )
+     fprintf(stderr, "failed to open input: %s\n", name);
+  }else
+  {
   if (verbose == 1)
     printf("%s is %.2f seconds\n", name, ((double)info.frames / (double)info.samplerate));
     
@@ -413,6 +417,7 @@ static int update_output_info(const char *name, SF_INFO *output) {
   output->seekable   = info.seekable;
 
   sf_close(input);
+  }
   return 0;
 }
 
