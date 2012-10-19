@@ -21,3 +21,12 @@ usage
 -D: if a chunk is created and is greater in length than it will be reprocessed using an increased threshold(t) and decreased byte buffer(b).
 -w: can be nice to see the wave curve useful when trying to understand the audio file... cat out.audiowave | ruby plot.viz.rb && open out.wave.png
 
+
+Compilation
+===========
+
+  You need cmake and libsnd to build this program.
+
+  cmake .
+  make
+
